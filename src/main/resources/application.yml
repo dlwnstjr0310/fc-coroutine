@@ -1,0 +1,33 @@
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
+  application:
+    name: webflux-coroutine
+  r2dbc:
+    url: r2dbc:pool:mariadb://localhost:3308/sample
+    username: user
+    password: 1234
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db-init/schema.sql
+logging:
+  level:
+    com.study: debug
+    org.springframework.r2dbc.core: debug
+    org.springframework.r2dbc.connection.init: debug
+    org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler: off
+    org.springframework.web.HttpLogging: off
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+  r2dbc:
+    url: r2dbc:pool:h2:mem://localhost/sample
+  sql:
+    init:
+      mode: embedded
