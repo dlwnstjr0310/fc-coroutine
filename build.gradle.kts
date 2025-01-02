@@ -19,6 +19,14 @@ repositories {
 }
 
 dependencies {
+
+    // 스레드 간 txid 공유
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.9.0")
+    // 스레드 간 reactor 기반의 라이브러리 호출 시에도 txid 공유
+    implementation("io.micrometer:context-propagation:1.1.2")
+    // @Aspect 사용
+    implementation("org.springframework.boot:spring-boot-starter-aop:3.4.1")
+
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
     implementation("io.github.microutils:kotlin-logging:3.0.5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
@@ -30,6 +38,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     runtimeOnly("org.mariadb:r2dbc-mariadb")
+    runtimeOnly("com.h2database:h2")
+    runtimeOnly("io.r2dbc:r2dbc-h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
 

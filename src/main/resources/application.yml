@@ -1,7 +1,11 @@
 spring:
+  profiles:
+    active: local
+---
+spring:
   output:
     ansi:
-      enabled: ALWAYS
+      enabled: always
   application:
     name: webflux-coroutine
   r2dbc:
@@ -19,9 +23,30 @@ logging:
     org.springframework.r2dbc.connection.init: debug
     org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler: off
     org.springframework.web.HttpLogging: off
-
+  pattern:
+    #    console: "%d{HH:mm:ss.SSS}|%highlight(%-5level)|%X{txid:-}|%green(%t)|%logger|%blue(\\(%F:%L\\))|%msg%n"
+    console: "%d{HH:mm:ss.SSS}|%highlight(%-5level)|%X{txid:-}|%green(%t)|%blue(\\(%F:%L\\))|%msg%n"
+api:
+  externalUrl: http://localhost:8081
 ---
-
+spring:
+  config:
+    activate:
+      on-profile: local
+  r2dbc:
+    url: r2dbc:pool:h2:file:///./sample
+  #    url: r2dbc:pool:h2:mem://localhost/sample
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:db-init/test.sql
+server:
+  error:
+    include-exception: on
+    include-message: on_param
+    include-stacktrace: on_param
+    include-binding-errors: on_param
+---
 spring:
   config:
     activate:
@@ -31,3 +56,24 @@ spring:
   sql:
     init:
       mode: embedded
+---
+spring:
+  config:
+    activate:
+      on-profile: stress
+  sql:
+    init:
+      mode: never
+logging:
+  level:
+    com.study: debug
+    org.springframework.r2dbc.core: off
+    org.springframework.r2dbc.connection.init: off
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+server:
+  error:
+    include-stacktrace: never
