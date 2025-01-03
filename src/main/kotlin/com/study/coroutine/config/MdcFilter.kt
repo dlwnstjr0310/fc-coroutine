@@ -1,5 +1,7 @@
 package com.study.coroutine.config
 
+import com.study.coroutine.config.extension.KEY_TXID
+import com.study.coroutine.config.extension.txid
 import io.micrometer.context.ContextRegistry
 import org.slf4j.MDC
 import org.springframework.core.annotation.Order
@@ -12,13 +14,15 @@ import reactor.core.publisher.Mono
 import reactor.util.context.Context
 import java.util.*
 
-const val KEY_TXID = "txid"
-
 @Order(1)
 @Component
 class MdcFilter : WebFilter {
 
     init {
+        propagateMdcThroughReactor()
+    }
+
+    private fun propagateMdcThroughReactor() {
         Hooks.enableAutomaticContextPropagation()
         ContextRegistry.getInstance().registerThreadLocalAccessor(
             KEY_TXID,
@@ -35,6 +39,8 @@ class MdcFilter : WebFilter {
 
         return chain.filter(exchange).contextWrite {
             Context.of(KEY_TXID, txid)
+        }.doOnError {
+            exchange.request.txid = txid
         }
     }
 }

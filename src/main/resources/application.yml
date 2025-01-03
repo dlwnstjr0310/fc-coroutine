@@ -42,10 +42,11 @@ spring:
       data-locations: classpath:db-init/test.sql
 server:
   error:
-    include-exception: on
-    include-message: on_param
-    include-stacktrace: on_param
-    include-binding-errors: on_param
+    include-exception: true # exception 의 종류를 출력
+    # always 는 항상, on_param 옵션은 파라미터로 path/error?message&trace&errors 등을 추가해야 값을 보여줌.
+    include-message: on_param # exception 의 message 를 출력
+    include-stacktrace: on_param # exception 의 stacktrace 를 출력
+    include-binding-errors: on_param # valid exception 이 발생하면 어떤 필드가 문제인지 출력
 ---
 spring:
   config:

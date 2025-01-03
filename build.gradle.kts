@@ -26,6 +26,9 @@ dependencies {
     implementation("io.micrometer:context-propagation:1.1.2")
     // @Aspect 사용
     implementation("org.springframework.boot:spring-boot-starter-aop:3.4.1")
+    // include-binding-errors 사용을 위한 valid
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
     implementation("io.github.microutils:kotlin-logging:3.0.5")
