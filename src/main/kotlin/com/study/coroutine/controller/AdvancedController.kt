@@ -3,6 +3,7 @@ package com.study.coroutine.controller
 import com.study.coroutine.config.validator.DateString
 import com.study.coroutine.exception.InvalidParameter
 import com.study.coroutine.service.AdvancedService
+import com.study.coroutine.service.ExternalApi
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.NotEmpty
@@ -12,6 +13,7 @@ import jakarta.validation.constraints.Size
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -21,6 +23,7 @@ private val logger = KotlinLogging.logger {}
 @RestController
 class AdvancedController(
     private val service: AdvancedService,
+    private val externalApi: ExternalApi,
 ) {
 
     @GetMapping("/test/mdc")
@@ -39,6 +42,16 @@ class AdvancedController(
             throw InvalidParameter(request, request::message, "code", "custom")
 //            throw RuntimeException("asdf")
         }
+    }
+
+    @GetMapping("/external/delay")
+    suspend fun delay() {
+        externalApi.delay()
+    }
+
+    @GetMapping("/external/circuit/{flag}", "/external/circuit", "/external/circuit/")
+    suspend fun testCircuitBreaker(@PathVariable flag: String): String {
+        return externalApi.testCircuitBreaker(flag)
     }
 
 }

@@ -28,6 +28,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aop:3.4.1")
     // include-binding-errors 사용을 위한 valid
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    // resilience4j
+    implementation("io.github.resilience4j:resilience4j-all:2.1.0")
+    // kotlin
+    implementation("io.github.resilience4j:resilience4j-kotlin:2.1.0")
 
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")

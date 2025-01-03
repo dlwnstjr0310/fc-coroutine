@@ -27,7 +27,7 @@ logging:
     #    console: "%d{HH:mm:ss.SSS}|%highlight(%-5level)|%X{txid:-}|%green(%t)|%logger|%blue(\\(%F:%L\\))|%msg%n"
     console: "%d{HH:mm:ss.SSS}|%highlight(%-5level)|%X{txid:-}|%green(%t)|%blue(\\(%F:%L\\))|%msg%n"
 api:
-  externalUrl: http://localhost:8081
+  externalUrl: http://localhost:8091
 ---
 spring:
   config:
