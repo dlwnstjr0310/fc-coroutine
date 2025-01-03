@@ -26,15 +26,15 @@ class ArticleService(
         return repository.findById(id) ?: throw NoArticleFound("id: $id")
     }
 
-//    suspend fun getAll(title: String? = null): Flow<Article> {
-//        return if (title.isNullOrBlank()) {
-//            repository.findAll()
-//        } else {
-//            repository.findAllByTitleContains(title)
-//        }
-//    }
+    suspend fun getAll(title: String? = null): Flow<Article> {
+        return if (title.isNullOrBlank()) {
+            repository.findAll()
+        } else {
+            repository.findAllByTitleContains(title)
+        }
+    }
 
-    suspend fun getAll(request: QryArticle): Flow<Article> {
+    suspend fun getAllCached(request: QryArticle): Flow<Article> {
 
         val params = HashMap<String, Any>()
 
@@ -73,13 +73,13 @@ class ArticleService(
 
         return sql.map { row ->
             Article(
-                id = row.get("id") as Long,
-                title = row.get("title") as String,
-                body = row.get("body") as String?,
-                authorId = row.get("author_id") as Long,
+                id = row["id"] as Long,
+                title = row["title"] as String,
+                body = row["body"] as String?,
+                authorId = row["author_id"] as Long,
             ).apply {
-                createdAt = row.get("created_at") as LocalDateTime?
-                updatedAt = row.get("updated_at") as LocalDateTime?
+                createdAt = row["created_at"] as LocalDateTime?
+                updatedAt = row["updated_at"] as LocalDateTime?
             }
         }.flow()
     }

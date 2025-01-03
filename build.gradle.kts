@@ -32,6 +32,9 @@ dependencies {
     implementation("io.github.resilience4j:resilience4j-all:2.1.0")
     // kotlin
     implementation("io.github.resilience4j:resilience4j-kotlin:2.1.0")
+    // testContainer
+    testImplementation("org.testcontainers:testcontainers:1.19.0")
+
 
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
