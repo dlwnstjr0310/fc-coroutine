@@ -1,8 +1,10 @@
 package com.study.coroutine.service
 
+import com.study.coroutine.config.Locker
 import com.study.coroutine.model.Article
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
+import org.springframework.cache.interceptor.SimpleKey
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import com.study.coroutine.exception.NoArticleFound as NoAccountFound
@@ -12,7 +14,8 @@ private val logger = KotlinLogging.logger { }
 
 @Service
 class AccountService(
-    private val repository: AccountRepository
+    private val repository: AccountRepository,
+    private val locker: Locker
 ) {
 
     suspend fun get(id: Long): ResAccount {
@@ -21,14 +24,16 @@ class AccountService(
 
     @Transactional
     suspend fun deposit(id: Long, amount: Long) {
-        logger.debug { "1. request" }
-        repository.findArticleById(id)?.let { account ->
-            logger.debug { "2. read data" }
-            delay(3000)
-            account.balance += amount
-            repository.save(account)
-            logger.debug { "3. update data" }
-        } ?: throw NoAccountFound("id : $id")
+
+        val key = SimpleKey(AccountService::deposit.name, id)
+
+        locker.lock(key) {
+            repository.findArticleById(id)?.let { account ->
+                delay(3000)
+                account.balance += amount
+                repository.save(account)
+            } ?: throw NoAccountFound("id : $id")
+        }
     }
 
 }

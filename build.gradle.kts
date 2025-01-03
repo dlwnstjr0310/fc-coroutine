@@ -35,8 +35,6 @@ dependencies {
     // testContainer
     testImplementation("org.testcontainers:testcontainers:1.19.0")
 
-
-
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
     implementation("io.github.microutils:kotlin-logging:3.0.5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
