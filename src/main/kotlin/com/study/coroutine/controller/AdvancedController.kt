@@ -2,8 +2,10 @@ package com.study.coroutine.controller
 
 import com.study.coroutine.config.validator.DateString
 import com.study.coroutine.exception.InvalidParameter
+import com.study.coroutine.service.AccountService
 import com.study.coroutine.service.AdvancedService
 import com.study.coroutine.service.ExternalApi
+import com.study.coroutine.service.ResAccount
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.NotEmpty
@@ -24,6 +26,7 @@ private val logger = KotlinLogging.logger {}
 class AdvancedController(
     private val service: AdvancedService,
     private val externalApi: ExternalApi,
+    private val accountService: AccountService,
 ) {
 
     @GetMapping("/test/mdc")
@@ -52,6 +55,17 @@ class AdvancedController(
     @GetMapping("/external/circuit/{flag}", "/external/circuit", "/external/circuit/")
     suspend fun testCircuitBreaker(@PathVariable flag: String): String {
         return externalApi.testCircuitBreaker(flag)
+    }
+
+    @GetMapping("/account/{id}")
+    suspend fun getAccount(@PathVariable id: Long): ResAccount {
+        return accountService.get(id)
+    }
+
+    @PutMapping("/account/{id}/{amount}")
+    suspend fun deposit(@PathVariable id: Long, @PathVariable amount: Long): ResAccount {
+        accountService.deposit(id, amount)
+        return accountService.get(id)
     }
 
 }

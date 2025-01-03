@@ -14,6 +14,9 @@ class Article(
     var title: String,
     var body: String? = null,
     var authorId: Long? = null,
+    var balance: Long = 0,
+//    @Version
+    var version: Int = 1,
 ) : BaseEntity(), Serializable {
 
     override fun equals(other: Any?): Boolean {
