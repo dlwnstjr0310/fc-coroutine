@@ -42,6 +42,7 @@ class ArticleController(
     // /article/all?title=foo&authorId=1&from=20210101
     @GetMapping("/all")
     suspend fun getAll(request: QryArticle): Flow<Article> {
+//        return service.getAll(request)
         return service.getAllCached(request)
     }
 

@@ -1,5 +1,7 @@
 package com.study.coroutine.service
 
+import com.study.coroutine.config.CacheKey
+import com.study.coroutine.config.CacheManager
 import com.study.coroutine.config.extension.format
 import com.study.coroutine.config.extension.toLocalDate
 import com.study.coroutine.config.validator.DateString
@@ -7,23 +9,40 @@ import com.study.coroutine.exception.NoArticleFound
 import com.study.coroutine.model.Article
 import com.study.coroutine.repository.ArticleRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.toList
+import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.flow
 import org.springframework.stereotype.Service
+import java.io.Serializable
 import java.time.LocalDateTime
+import kotlin.time.Duration.Companion.seconds
 
 @Service
 class ArticleService(
     private val repository: ArticleRepository,
     private val dbClient: DatabaseClient,
+    private val cache: CacheManager,
+    redisTemplate: ReactiveRedisTemplate<Any, Any>,
 ) {
+
+    private val ops = redisTemplate.opsForValue()
+
+    init {
+        cache.TTL["/article/get"] = 10.seconds
+        cache.TTL["/article/get/all"] = 10.seconds
+    }
 
     suspend fun create(request: ReqCreate): Article {
         return repository.save(request.toArticle())
     }
 
     suspend fun get(id: Long): Article {
-        return repository.findById(id) ?: throw NoArticleFound("id: $id")
+        val key = CacheKey("/article/get", id)
+        return cache.get(key) { repository.findById(id) }
+            ?: throw NoArticleFound("id: $id")
     }
 
     suspend fun getAll(title: String? = null): Flow<Article> {
@@ -35,6 +54,13 @@ class ArticleService(
     }
 
     suspend fun getAllCached(request: QryArticle): Flow<Article> {
+        val key = CacheKey("/article/get/all", request)
+        return cache.get(key) {
+            getAll(request).toList()
+        }?.asFlow() ?: emptyFlow()
+    }
+
+    suspend fun getAll(request: QryArticle): Flow<Article> {
 
         val params = HashMap<String, Any>()
 
@@ -91,11 +117,17 @@ class ArticleService(
             request.title?.let { title = it }
             request.body?.let { body = it }
             request.authorId?.let { authorId = it }
-        })
+        }).also {
+            val key = CacheKey("/article/get", id)
+            cache.delete(key)
+        }
     }
 
     suspend fun delete(id: Long) {
-        return repository.deleteById(id)
+        return repository.deleteById(id).also {
+            val key = CacheKey("/article/get", id)
+            cache.delete(key)
+        }
     }
 
 }
@@ -137,4 +169,4 @@ data class QryArticle(
     val from: String?,
     @DateString
     val to: String?,
-)
+) : Serializable
