@@ -2,6 +2,7 @@ package com.study.coroutine.controller
 
 import com.study.coroutine.model.Article
 import com.study.coroutine.service.ArticleService
+import com.study.coroutine.service.QryArticle
 import com.study.coroutine.service.ReqCreate
 import com.study.coroutine.service.ReqUpdate
 import kotlinx.coroutines.flow.Flow
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
@@ -34,9 +34,15 @@ class ArticleController(
         return service.get(id)
     }
 
+//    @GetMapping("/all")
+//    suspend fun getAll(@RequestParam title: String?): Flow<Article> {
+//        return service.getAll(title)
+//    }
+
+    // /article/all?title=foo&authorId=1&from=20210101
     @GetMapping("/all")
-    suspend fun getAll(@RequestParam title: String?): Flow<Article> {
-        return service.getAll(title)
+    suspend fun getAll(request: QryArticle): Flow<Article> {
+        return service.getAll(request)
     }
 
     @PutMapping("/{id}")

@@ -34,8 +34,8 @@ spring:
     activate:
       on-profile: local
   r2dbc:
-    url: r2dbc:pool:h2:file:///./sample
-  #    url: r2dbc:pool:h2:mem://localhost/sample
+    #    url: r2dbc:pool:h2:file:///./sample
+    url: r2dbc:pool:h2:mem://localhost/sample
   sql:
     init:
       mode: always
